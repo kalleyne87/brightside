@@ -1,0 +1,267 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Brightside Family Dental</title>
+<meta name="description" content="Demo website for a sample dental office, built to show an AI front-desk assistant.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600&family=Newsreader:opsz,wght@6..72,400;6..72,500&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/@n8n/chat/dist/style.css" rel="stylesheet">
+<style>
+:root{
+  --cobalt:#0b3a9c;
+  --cobalt-deep:#082a73;
+  --cobalt-night:#061d54;
+  --tint:#eaf1fb;
+  --line:#d3deef;
+  --ink:#10203f;
+  --soft:#4d5d7a;
+  --white:#ffffff;
+  --gold:#f2b138;
+
+  --chat--color--primary:#0b3a9c;
+  --chat--color--primary-shade-50:#0d44b5;
+  --chat--color--primary-shade-100:#1050c9;
+  --chat--color--secondary:#f2b138;
+  --chat--color--secondary-shade-50:#d9981c;
+  --chat--window--width:400px;
+  --chat--window--height:600px;
+  --chat--heading--font-size:1.2rem;
+  --chat--subtitle--font-size:.9rem;
+  --chat--subtitle--line-height:1.3;
+  --chat--header--padding:16px 20px;
+  --chat--header-height:auto;
+  --chat--header--background:#0b3a9c;
+  --chat--header--color:#ffffff;
+  --chat--toggle--background:#0b3a9c;
+  --chat--toggle--hover--background:#0d44b5;
+  --chat--toggle--active--background:#0d44b5;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;font-family:"Figtree",system-ui,sans-serif;color:var(--ink);background:var(--white)}
+.site{font-size:18px;line-height:1.55}
+.site a:not(.btn){color:inherit}
+.site :focus-visible{outline:3px solid var(--gold);outline-offset:3px}
+.serif{font-family:"Newsreader",Georgia,serif;font-weight:400}
+
+/* buttons */
+.btn{display:inline-block;font:600 16px/1 "Figtree",sans-serif;padding:15px 24px;border-radius:10px;text-decoration:none;border:2px solid transparent;cursor:pointer}
+.btn-solid{background:var(--cobalt);color:var(--white)}
+.btn-solid:hover{background:var(--cobalt-deep)}
+.btn-white{background:var(--white);color:var(--cobalt-deep)}
+.btn-white:hover{background:var(--tint)}
+.btn-line{background:transparent;color:var(--white);border-color:rgba(255,255,255,.7)}
+.btn-line:hover{background:rgba(255,255,255,.12)}
+
+/* nav */
+.nav{position:sticky;top:0;z-index:20;background:var(--white);border-bottom:1px solid var(--line)}
+.nav-in{max-width:1240px;margin:0 auto;padding:0 28px;height:76px;display:flex;align-items:center;justify-content:space-between;gap:24px}
+.brand{font-family:"Newsreader",Georgia,serif;font-size:26px;color:var(--cobalt);text-decoration:none;white-space:nowrap}
+.menu{display:flex;gap:34px}
+.menu a{text-decoration:none;font-weight:500;color:var(--ink)}
+.menu a:hover{color:var(--cobalt)}
+.nav .btn{padding:13px 20px}
+
+/* hero */
+.hero{display:grid;grid-template-columns:1fr 1fr;min-height:640px;background:var(--cobalt)}
+.hero-copy{padding:88px 64px 80px max(28px,calc((100vw - 1240px)/2 + 28px));display:flex;flex-direction:column;justify-content:center;color:var(--white)}
+.badge{align-self:flex-start;display:inline-flex;align-items:center;gap:10px;font-size:15px;font-weight:500;margin-bottom:28px;padding:8px 14px 8px 12px;border-radius:999px;background:rgba(255,255,255,.12)}
+.badge i{width:9px;height:9px;border-radius:50%;background:#6ee7a8;display:block}
+.hero h1.serif{font-size:clamp(44px,5.4vw,72px);line-height:1.02;letter-spacing:-.015em;margin:0 0 24px}
+.hero-copy p.lede{font-size:20px;line-height:1.5;max-width:30em;margin:0 0 40px;color:#dbe6fb}
+.hero-actions{display:flex;flex-wrap:wrap;gap:12px}
+
+.hero-art{position:relative;overflow:hidden;background:linear-gradient(160deg,#cfe0f8 0%,#9fbdf0 55%,#6f98e6 100%)}
+.hero-art svg.fallback{position:absolute;inset:0;width:100%;height:100%}
+.hero-art img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.slots{position:absolute;left:32px;bottom:32px;width:min(380px,calc(100% - 64px));background:var(--white);color:var(--ink);border-radius:18px;padding:22px 22px 20px;box-shadow:0 18px 40px rgba(6,29,84,.28)}
+.slots h2.serif{font-size:26px;margin:0 0 2px}
+.slots p{margin:0 0 14px;color:var(--soft);font-size:15px}
+.slot-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.slot{border:1px solid var(--line);border-radius:10px;padding:10px 4px;text-align:center;font-weight:600;font-size:15px;background:var(--tint)}
+.slot.taken{background:transparent;color:#92a0b9;text-decoration:line-through;border-style:dashed;font-weight:500}
+.slots .hint{margin:14px 0 0;font-size:14px}
+
+/* trust strip */
+.trust{background:var(--cobalt-night);color:var(--white)}
+.trust ul{max-width:1240px;margin:0 auto;padding:22px 28px;list-style:none;display:grid;grid-template-columns:repeat(4,1fr);gap:24px;font-size:16px;font-weight:500}
+.trust li{display:flex;gap:12px;align-items:flex-start}
+.trust svg{flex:none;margin-top:3px}
+
+/* sections */
+.section{padding:96px 0}
+.wrap{max-width:1240px;margin:0 auto;padding:0 28px}
+.split{display:grid;grid-template-columns:.8fr 1.2fr;gap:72px;align-items:start}
+.section h2.serif{font-size:clamp(34px,3.6vw,48px);line-height:1.06;letter-spacing:-.01em;margin:0 0 16px}
+.section p.sub{color:var(--soft);margin:0;max-width:24em}
+.prices{margin:0;padding:0;list-style:none}
+.prices li{display:flex;justify-content:space-between;gap:20px;padding:22px 0;border-bottom:1px solid var(--line);font-size:20px}
+.prices li:first-child{border-top:1px solid var(--line)}
+.prices span{color:var(--cobalt);font-weight:600;white-space:nowrap}
+.visit{background:var(--tint)}
+.visit dl{margin:0;display:grid;grid-template-columns:auto 1fr;gap:14px 40px}
+.visit dt{font-weight:600}
+.visit dd{margin:0;color:var(--soft)}
+.visit address{font-style:normal;color:var(--soft);margin:0 0 18px}
+
+/* footer */
+.foot{background:var(--cobalt-night);color:#b9c8e8;padding:36px 0;font-size:15px}
+.foot b{color:var(--gold);font-weight:600}
+
+@media (max-width:900px){
+  .menu{display:none}
+  .hero{grid-template-columns:1fr}
+  .hero-copy{padding:56px 24px 48px}
+  .hero-art{min-height:560px}
+  .trust ul{grid-template-columns:1fr 1fr}
+  .split{grid-template-columns:1fr;gap:32px}
+  .section{padding:64px 0}
+  .wrap{padding:0 24px}
+  .nav-in{padding:0 20px}
+}
+@media (max-width:520px){
+  .trust ul{grid-template-columns:1fr}
+  .nav .btn{padding:10px 14px;font-size:14px}
+  .brand{font-size:19px}
+  .nav-in{gap:12px;padding:0 16px}
+  .visit dl{grid-template-columns:1fr;gap:2px}
+  .visit dd{margin-bottom:12px}
+}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+</style>
+</head>
+<body>
+<div class="site">
+  <header class="nav">
+    <div class="nav-in">
+      <a class="brand" href="#">Brightside Family Dental</a>
+      <nav class="menu" aria-label="Main">
+        <a href="#services">Services</a>
+        <a href="#visit">Visit us</a>
+        <a href="case-study.html">About this demo</a>
+      </nav>
+      <a class="btn btn-solid" href="#" data-open-chat>Book a visit</a>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="hero-copy">
+        <span class="badge"><i></i>Accepting new patients</span>
+        <h1 class="serif">Gentle dental care, with answers at 2&nbsp;a.m.</h1>
+        <p class="lede">Ask our assistant about hours, prices, insurance, or booking. A real person follows up the next business morning.</p>
+        <div class="hero-actions">
+          <a class="btn btn-white" href="#" data-open-chat>Chat with us</a>
+          <a class="btn btn-line" href="#visit">Find the office</a>
+        </div>
+      </div>
+
+      <div class="hero-art">
+        <svg class="fallback" viewBox="0 0 600 700" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+          <circle cx="470" cy="150" r="230" fill="#ffffff" fill-opacity=".14"/>
+          <circle cx="120" cy="560" r="260" fill="#0b3a9c" fill-opacity=".14"/>
+          <g transform="translate(300 40) scale(1.15)" fill="#ffffff" fill-opacity=".3">
+            <path d="M100 20c-20-14-52-10-60 18-6 22 4 38 8 58 4 24 6 62 22 62 14 0 12-34 30-34s16 34 30 34c16 0 18-38 22-62 4-20 14-36 8-58-8-28-40-32-60-18z"/>
+          </g>
+        </svg>
+        <img src="images/hero.jpg" alt="" onerror="this.remove()">
+        <div class="slots" aria-label="Sample open appointments">
+          <h2 class="serif">Open this week</h2>
+          <p>Cleanings and checkups, 45 minutes.</p>
+          <div class="slot-grid">
+            <div class="slot">Tue 9:00</div><div class="slot taken">Tue 10:30</div><div class="slot">Tue 2:15</div>
+            <div class="slot taken">Wed 8:30</div><div class="slot">Wed 11:00</div><div class="slot">Wed 3:45</div>
+            <div class="slot">Thu 9:45</div><div class="slot">Thu 1:00</div><div class="slot taken">Thu 4:30</div>
+          </div>
+          <p class="hint">Tell the assistant which time you want and we'll confirm.</p>
+        </div>
+      </div>
+    </section>
+
+    <div class="trust">
+      <ul>
+        <li><svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="10" fill="#fff"/><path d="M5.5 10.4l3 3 6-6.4" fill="none" stroke="#061d54" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Same-week appointments, no long waits</li>
+        <li><svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="10" fill="#fff"/><path d="M5.5 10.4l3 3 6-6.4" fill="none" stroke="#061d54" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Prices shown before you book</li>
+        <li><svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="10" fill="#fff"/><path d="M5.5 10.4l3 3 6-6.4" fill="none" stroke="#061d54" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Questions answered any hour by our assistant</li>
+        <li><svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="10" fill="#fff"/><path d="M5.5 10.4l3 3 6-6.4" fill="none" stroke="#061d54" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Insurance checked by a real person</li>
+      </ul>
+    </div>
+
+    <section class="section" id="services">
+      <div class="wrap split">
+        <div>
+          <h2 class="serif">Services and typical prices</h2>
+          <p class="sub">Final costs depend on your exam. Ask the assistant for a range before you book.</p>
+        </div>
+        <ul class="prices">
+          <li>Cleaning and exam <span>$120 to $180</span></li>
+          <li>Digital X-rays <span>$60 to $110</span></li>
+          <li>Fillings <span>$150 to $300</span></li>
+          <li>Teeth whitening <span>$350</span></li>
+          <li>Crowns <span>$900 to $1,300</span></li>
+          <li>Emergency visit <span>$95 plus treatment</span></li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="section visit" id="visit">
+      <div class="wrap split">
+        <div>
+          <h2 class="serif">Visit us</h2>
+          <address>214 Maple Street, Suite 3<br>Springfield</address>
+          <p class="sub">Free parking behind the building. Step-free entrance on the east side.</p>
+        </div>
+        <dl>
+          <dt>Monday to Thursday</dt><dd>8:00 am to 5:00 pm</dd>
+          <dt>Friday</dt><dd>8:00 am to 1:00 pm</dd>
+          <dt>Saturday and Sunday</dt><dd>Closed</dd>
+          <dt>Insurance</dt><dd>We work with most major plans. Ask the assistant to start a check.</dd>
+        </dl>
+      </div>
+    </section>
+  </main>
+
+  <footer class="foot">
+    <div class="wrap">
+      <b>Demo project.</b> Brightside Family Dental is a fictional business created to show an AI front-desk assistant and lead automation. Prices, hours and contact details are samples.
+    </div>
+  </footer>
+</div>
+
+<script src="config.js"></script>
+<script type="module">
+  import { createChat } from 'https://cdn.jsdelivr.net/npm/@n8n/chat/dist/chat.bundle.es.js';
+
+  createChat({
+    webhookUrl: window.BRIGHTSIDE_CHAT_URL,
+    mode: 'window',
+    showWelcomeScreen: false,
+    initialMessages: [
+      'Hi, I\'m the assistant for Brightside Family Dental.',
+      'I can answer questions about hours, prices and insurance, or help you request an appointment.'
+    ],
+    i18n: {
+      en: {
+        title: 'Brightside Dental',
+        subtitle: 'Typically replies in seconds',
+        footer: '',
+        getStarted: 'New conversation',
+        inputPlaceholder: 'Type your question',
+        closeButtonTooltip: 'Close chat'
+      }
+    }
+  });
+
+  document.querySelectorAll('[data-open-chat]').forEach((el) => {
+    el.addEventListener('click', (e) => {
+      e.preventDefault();
+      const toggle = document.querySelector('.chat-window-toggle');
+      if (toggle) toggle.click();
+    });
+  });
+</script>
+</body>
+</html>

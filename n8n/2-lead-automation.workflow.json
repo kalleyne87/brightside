@@ -1,0 +1,193 @@
+{
+  "name": "Brightside Dental - Lead Automation",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "brightside-lead",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "webhook",
+      "name": "New Lead Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        0,
+        0
+      ],
+      "webhookId": "brightside-lead"
+    },
+    {
+      "parameters": {
+        "jsCode": "const b = $input.first().json.body ?? $input.first().json;\nconst clean = (v) => (typeof v === 'string' ? v.trim() : '');\nconst full = clean(b.name);\nconst parts = full.split(/\\s+/);\nconst email = clean(b.email).toLowerCase();\nconst phone = clean(b.phone);\nconst reason = clean(b.reason);\nconst urgent = /pain|swell|bleed|broken|knocked|emergency|infection/i.test(reason);\nreturn [{ json: {\n  firstName: parts[0] || '',\n  lastName: parts.slice(1).join(' '),\n  fullName: full,\n  email,\n  phone,\n  reason,\n  preferredTime: clean(b.preferred_time),\n  urgent,\n  hasContact: Boolean(email || phone),\n  receivedAt: new Date().toISOString()\n}}];"
+      },
+      "id": "clean",
+      "name": "Clean and Flag Lead",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        240,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "has-email",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              },
+              "leftValue": "={{ $json.email }}",
+              "rightValue": ""
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "has-email",
+      "name": "Has Email?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        480,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "authentication": "appToken",
+        "resource": "contact",
+        "operation": "upsert",
+        "email": "={{ $json.email }}",
+        "additionalFields": {
+          "firstName": "={{ $json.firstName }}",
+          "lastName": "={{ $json.lastName }}",
+          "phoneNumber": "={{ $json.phone }}"
+        }
+      },
+      "id": "hubspot",
+      "name": "Save Contact in HubSpot",
+      "type": "n8n-nodes-base.hubspot",
+      "typeVersion": 2,
+      "position": [
+        720,
+        -100
+      ]
+    },
+    {
+      "parameters": {
+        "select": "channel",
+        "channelId": {
+          "__rl": true,
+          "value": "#new-patient-leads",
+          "mode": "name"
+        },
+        "text": "={{ ($('Clean and Flag Lead').item.json.urgent ? ':rotating_light: URGENT ' : '') + 'New patient request\\nName: ' + $('Clean and Flag Lead').item.json.fullName + '\\nContact: ' + ($('Clean and Flag Lead').item.json.email || $('Clean and Flag Lead').item.json.phone || 'none given') + '\\nReason: ' + $('Clean and Flag Lead').item.json.reason + '\\nPreferred time: ' + ($('Clean and Flag Lead').item.json.preferredTime || 'not given') }}",
+        "otherOptions": {}
+      },
+      "id": "slack",
+      "name": "Alert Front Desk in Slack",
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.3,
+      "position": [
+        960,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ { saved: true, message: 'Request received. The front desk will confirm by the next business morning.' } }}",
+        "options": {}
+      },
+      "id": "respond",
+      "name": "Respond to Chatbot",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        1200,
+        0
+      ]
+    }
+  ],
+  "connections": {
+    "New Lead Webhook": {
+      "main": [
+        [
+          {
+            "node": "Clean and Flag Lead",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Clean and Flag Lead": {
+      "main": [
+        [
+          {
+            "node": "Has Email?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Has Email?": {
+      "main": [
+        [
+          {
+            "node": "Save Contact in HubSpot",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Alert Front Desk in Slack",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Save Contact in HubSpot": {
+      "main": [
+        [
+          {
+            "node": "Alert Front Desk in Slack",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Alert Front Desk in Slack": {
+      "main": [
+        [
+          {
+            "node": "Respond to Chatbot",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "pinData": {}
+}
